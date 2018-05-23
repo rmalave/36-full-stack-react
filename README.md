@@ -1,75 +1,101 @@
-# ![CF](http://i.imgur.com/7v5ASc8.png) 36 Full Stack React
+# React Redux Budget Tracker App
 
-## Submission Instructions
-* Work in a fork of this repository
-* Work in a branch on your fork
-* Write all of your code in a directory named `lab-` + `<your name>` **e.g.** `lab-duncan`
-* Submit a pull request to this repository
-* Submit a link to your pull request on canvas
-* Submit a question, observation, and how long you spent on canvas  
+**Author** : Rafael Malave
 
-## Requirements  
-Build a back-end server that your front-end app draws it's initial data
-from. Populate a database with sample data then configure a route that
-serves the data from the database to the front-end application.
+## Overview
 
-Your application should make an initial request to the server to fill it's
-store with data. Use `fetch` to make the request to the server, then use
-`store.dispatch` to dispatch an action that inflates the store with data.
+Example app that app built with React and Redux that lets users add categories to a list with a form.
 
-The reducer should simply parse and return the data from the inflate action
-as the state of it's store.
+## Getting started
 
-Refer to the [lecture app](https://github.com/codefellows/seattle-javascript-401n6/tree/master/36-asynchronous-actions/lecture)
-as a reference.
+Clone this repository to your local computer. Run `npm install` to install the necessary packages. Start the server with npm run watch on your local machine.
 
-```js
-import reducers from './reducers';
-const store = createStore(reducers);
+#### App Features
+##### Category
+* in this app a category contains the following properties
+* `id` a uuid
+* `timestamp` a date from when the category was created
+* `title` a string that is the name of the category
+* `budget` a number that is the total amount of $ in the category
+* fell free to add more to your categories if you want
 
-fetch('http://localhost:3000')
-.then(res => res.json())
-.then(json => {
-  console.log('json:', json);
-  store.dispatch(inflateMovies(json));
-});
+##### expense
+* in this app a expense should contain at least the following properties
+  * `id` a uuid
+  * `categoryID` an id that corresponds to an existing category
+  * `timestamp` a date from when the category was created
+  * `name` a string that is the name of the category
+  * `price` a number that is the total amount of $ in the category
+  * fell free to add more to your expense if you want
+
+##### Redux
+###### Category Reducer
+* This reducer supports the following interactions
+  * `CATEGORY_CREATE`
+  * `CATEGORY_UPDATE`
+  * `CATEGORY_DESTORY`
+
+###### Expense reducer
+* this reducer supports the following interactions
+  * `EXPENSE_CREATE` -- store an expense
+  * `EXPENSE_UPDATE` -- update an existing expense
+  * `EXPENSE_DELETE` -- delete an existing expense
+* if you need others feel free to add them
+
+###### Store
+* `lib/store.js` exports a function that returns a new redux store from your category reducer
+
+##### Component Structure
+```
+App
+  Provider
+    BrowserRouter
+      Route / Dashboard
+        CategoryForm -- for creating categorys
+        [Category Item] -- list of Category items
+           CategoryForm  -- for updating categorys
+           ExpenseForm -- for creating expenses
+           [ExpenseItem]  -- list of expense items
+              ExpenseForm -- for updating an expense
 ```
 
-#### Configuration  
-The front-end app and the back-end server are two different servers for now.
-Run the server with a command like `nodemon index.js`, and run the front-end
-app with a command like `webpack-dev-server`.
+###### App Component
+The App component sets up the Provider for the redux store and the Router.
 
-##### backend/
-* Make a simple bare-bones server that includes a route to retrieve
-  budget information, and a route to retrieve expense information.
-* Make Mongoose models to model the budget and expenses.
-* Use the `cors` npm module to configure your server to be accessed
-  via a cross-origin request.
-* Attach a `uuid` property to the models that keeps tracks of ids as
-  you've used them so far in your app. Ignore the ids MongoDB creates.
+###### Dashboard Component
+*  Displayed on the `/` route
+*  Uses react-redux's `connect` to map state and dispatchable methods to props
+*  Displays a `CategoryForm` for adding categories to the app state
+*  Displays a `CategoryItem` for each category in the app state
 
-##### frontend/
-* **README.md** -- with a documention about your lab
-* **.babelrc** -- with all dependencies and dev-dependencies 
-* **.gitignore** -- with a robust gitignore
-* **src/** -- containing the front end code
-* **src/main.js** -- renders the app
+###### CategoryForm Component
+*  expect an `onComplete` prop to be a function
+*  `onComplete` gets invoked with the CategoryForms State when the form is submited
+*  Expects a `buttonText` prop to be configure the submit buttons text
+*  Supports and optional `category` prop that will initialize the state of the form
 
-#### Feature Tasks 
-* Create a frontend for your lab-14-two-resource-api.
- * You can also choose to to instead use a comprable REST api that does not have auth (must permit full CRUD)
-* You are only required to create CRUD opperations for a single resource of your bakend
-* Use react/redux best practices
-* Add validation in your redux routers
-* Add reporter and thunk middleware to your redux store
-* make async action creators for making ajax request to your backend
-* make sync action creators from updating your app store
+###### CategoryItem Component
+*  Displays the category's name and budget
+*  Displays a delete button
+* `onClick` the category is removed from the application state
+*  Displays a CategoryForm  
 
-## Stretch Goals
-* Write your application up so it makes `POST` requests to the server
-  then budgets and expenses are created so they're really saved in the
-  server database.
+##### ExpenseForm Component
+* should support an `expense` prop that will both set the initial form state, and update the state in the hook on `componentWillReceiveProps()`
+* A `buttonText` prop configures the submit button's text
 
-####  Documentation  
-Write a description of the project in your README.md
+##### ExpenseItem Component
+* Creates a new expense `onClick`
+* Displays the `name` and `price` of the component
+* Displays an ExpenseForm that enables the user to update the expense in the app state
+
+##### Form Validation Middleware
+* Title and number fields for category should not be empty
+* Title and price fields for expense should not be empty
+
+## Technologies
+
+- Nodejs
+- Express
+- npm
+- MongoDB
